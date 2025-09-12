@@ -34,12 +34,26 @@ namespace LinkShortener.Controllers
                 HttpOnly = true
             });
 
-            return Ok(user);
+            var userDTO = new UserDTO
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Email = user.Email,
+                Role = user.Role
+            };
+
+            return Ok(userDTO);
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
+
+            var existingUser = await _repository.GetByEmailAsync(request.Email);
+            if (existingUser != null)
+            {
+                return Conflict(new { message = "Email already in use" });
+            }
             var user = new User
             {
                 Name = request.Name,
@@ -50,7 +64,15 @@ namespace LinkShortener.Controllers
 
             await _repository.CreateAsync(user);
 
-            return Ok(user);
+            var userDTO = new UserDTO
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Email = user.Email,
+                Role = user.Role
+            };
+
+            return Ok(userDTO);
         }
     }
 }
