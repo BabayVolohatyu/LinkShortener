@@ -9,9 +9,9 @@ namespace LinkShortener.Controllers
     public class LoginController : Controller
     {
         private readonly IUserRepository _repository;
-        private readonly JwtService _jwtService;
+        private readonly IJwtService _jwtService;
 
-        public LoginController(IUserRepository repository, JwtService jwtService)
+        public LoginController(IUserRepository repository, IJwtService jwtService)
         {
             _repository = repository;
             _jwtService = jwtService;
