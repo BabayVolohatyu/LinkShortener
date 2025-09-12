@@ -13,7 +13,8 @@ builder.Services.AddCors(options =>
     {
         builder.WithOrigins("http://localhost:4200")
                .AllowAnyHeader()
-               .AllowAnyMethod();
+               .AllowAnyMethod()
+               .AllowCredentials();
     });
 });
 
@@ -24,12 +25,6 @@ builder.Services.AddDbContext<LinkShortenerDbContext>(options =>
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 var app = builder.Build();
-
-
-
-app.UseDefaultFiles();
-app.UseStaticFiles();
-
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -44,9 +39,5 @@ app.UseHttpsRedirection();
 app.UseRouting();
 
 app.UseAuthorization();
-
-app.MapControllers();
-
-app.MapFallbackToFile("index.html");
 
 app.Run();
