@@ -12,7 +12,7 @@ namespace LinkShortener.Data
         {
             _context = context;
         }
-        public async Task<User> Create(User user) 
+        public async Task<User> CreateAsync(User user) 
         {
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();

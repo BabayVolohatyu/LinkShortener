@@ -4,7 +4,7 @@ namespace LinkShortener.Data
 {
     public interface IUserRepository
     {
-        Task<User> Create(User user);
+        Task<User> CreateAsync(User user);
         Task<User?> GetByEmailAsync(string email);
     }
 }
