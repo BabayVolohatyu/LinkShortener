@@ -1,4 +1,5 @@
 ﻿using LinkShortener.Data;
+using LinkShortener.DTO;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LinkShortener.Controllers
@@ -12,10 +13,14 @@ namespace LinkShortener.Controllers
             _repository = repository;
         }
 
-        [HttpGet]
-        public IActionResult Index()
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
-            return View();
+            var user = _repository.GetByEmailAsync(request.Email);
+            if (user == null) {
+               
+            }
+            return Ok();
         }
     }
 }
