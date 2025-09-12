@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Router, RouterModule } from '@angular/router';
 import { trigger, style, animate, transition } from '@angular/animations';
 
@@ -25,7 +25,7 @@ export class LoginComponent {
 
   errorMessage = '';
   userNotFound = false;
-  showNameField = false;
+  isRegisterMode = false;   
 
   constructor(
     private fb: FormBuilder,
@@ -34,13 +34,12 @@ export class LoginComponent {
   ) {
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required],
-      name: ['']
+      password: ['', Validators.required]
     });
   }
 
   onSubmit() {
-    if (this.showNameField) {
+    if (this.isRegisterMode) {
       // Registration
       this.http.post<any>('http://localhost:5091/register', this.form.value)
         .subscribe({
@@ -49,7 +48,7 @@ export class LoginComponent {
             this.router.navigate(['/index']);
           },
           error: err => {
-            this.errorMessage = err.error.message || 'Registration failed';
+            this.errorMessage = err.error?.message || err.message || 'Registration failed';
           }
         });
     } else {
@@ -66,7 +65,7 @@ export class LoginComponent {
           if (err.status === 404) {
             this.userNotFound = true;
           } else {
-            this.errorMessage = err.error.message || 'Login failed';
+            this.errorMessage = err.error?.message || err.message || 'Login failed';
           }
         }
       });
@@ -74,8 +73,13 @@ export class LoginComponent {
   }
 
   registerMode() {
-    this.showNameField = true;
     this.userNotFound = false;
+    this.isRegisterMode = true;
+
+    //add field on registration
+    if (!this.form.contains('name')) {
+      this.form.addControl('name', this.fb.control('', Validators.required));
+    }
   }
 
   continueAnonymously() {

@@ -10,13 +10,13 @@
     <input type="password" id="password" formControlName="password" required>
   </div>
 
-  <div *ngIf="showNameField" [@slideIn] class="form-group">
+  <div *ngIf="isRegisterMode" [@slideIn] class="form-group">
     <label for="name">Name</label>
     <input type="text" id="name" formControlName="name" required>
   </div>
 
   <button type="submit" [disabled]="form.invalid">
-    {{ showNameField ? 'Register' : 'Login' }}
+    {{ isRegisterMode ? 'Register' : 'Login' }}
   </button>
 
   <div *ngIf="userNotFound" class="options">
@@ -25,5 +25,4 @@
   </div>
 
   <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
-
 </form>
