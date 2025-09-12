@@ -42,7 +42,7 @@ export class LoginComponent {
   onSubmit() {
     if (this.showNameField) {
       // Registration
-      this.http.post<any>('https://localhost:7087/register', this.form.value)
+      this.http.post<any>('http://localhost:5091/register', this.form.value)
         .subscribe({
           next: res => {
             localStorage.setItem('jwt', res.token);
@@ -54,7 +54,7 @@ export class LoginComponent {
         });
     } else {
       // Login
-      this.http.post<any>('https://localhost:5091/login', {
+      this.http.post<any>('http://localhost:5091/login', {
         email: this.form.value.email,
         password: this.form.value.password
       }).subscribe({
