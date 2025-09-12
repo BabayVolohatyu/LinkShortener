@@ -28,6 +28,11 @@ namespace LinkShortener.Controllers
 
             var jwt = _jwtService.Generate(user.Id, user.Role);
 
+            Response.Cookies.Append("jwt", jwt, new CookieOptions 
+            {
+                HttpOnly = true
+            });
+
             return Ok(user);
         }
 
