@@ -1,0 +1,29 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="login-form">
+
+  <div class="form-group">
+    <label for="email">Email</label>
+    <input type="email" id="email" formControlName="email" required>
+  </div>
+
+  <div class="form-group">
+    <label for="password">Password</label>
+    <input type="password" id="password" formControlName="password" required>
+  </div>
+
+  <div *ngIf="showNameField" [@slideIn] class="form-group">
+    <label for="name">Name</label>
+    <input type="text" id="name" formControlName="name" required>
+  </div>
+
+  <button type="submit" [disabled]="form.invalid">
+    {{ showNameField ? 'Register' : 'Login' }}
+  </button>
+
+  <div *ngIf="userNotFound" class="options">
+    <span (click)="registerMode()">Register</span> |
+    <span (click)="continueAnonymously()">Continue anonymously</span>
+  </div>
+
+  <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+
+</form>
