@@ -5,7 +5,7 @@ using System.Text;
 
 namespace LinkShortener.Services
 {
-    public class JwtService
+    public class JwtService : IJwtService
     {
         private readonly string secureKey;
         public JwtService(IConfiguration configuration)

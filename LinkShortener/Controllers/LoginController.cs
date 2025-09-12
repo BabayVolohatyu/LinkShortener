@@ -1,6 +1,7 @@
 ﻿using LinkShortener.Data;
 using LinkShortener.DTO;
 using LinkShortener.Models;
+using LinkShortener.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LinkShortener.Controllers
@@ -8,10 +9,12 @@ namespace LinkShortener.Controllers
     public class LoginController : Controller
     {
         private readonly IUserRepository _repository;
+        private readonly JwtService _jwtService;
 
-        public LoginController(IUserRepository repository)
+        public LoginController(IUserRepository repository, JwtService jwtService)
         {
             _repository = repository;
+            _jwtService = jwtService;
         }
 
         [HttpPost("login")]
@@ -22,6 +25,9 @@ namespace LinkShortener.Controllers
             {
                 return Unauthorized(new { message = "Invalid email or password" });
             }
+
+            var jwt = _jwtService.Generate(user.Id, user.Role);
+
             return Ok(user);
         }
 
