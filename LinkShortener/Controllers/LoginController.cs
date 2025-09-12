@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LinkShortener.Controllers
 {
+    [Route("")]
     public class LoginController : Controller
     {
         private readonly IUserRepository _repository;
