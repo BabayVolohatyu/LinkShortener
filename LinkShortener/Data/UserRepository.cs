@@ -1,4 +1,5 @@
 ﻿using LinkShortener.Models;
+using Microsoft.EntityFrameworkCore;
 using System.Runtime.InteropServices;
 
 namespace LinkShortener.Data
@@ -13,9 +14,14 @@ namespace LinkShortener.Data
         }
         public async Task<User> Create(User user) 
         {
-            await _context.AddAsync(user);
+            await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
             return user;
+        }
+
+        public async Task<User?> GetByEmailAsync(string email) 
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
         }
     }
 }
