@@ -1,3 +1,6 @@
+using LinkShortener.Data;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -16,6 +19,10 @@ builder.Services.AddCors(options =>
                .AllowAnyMethod();
     });
 });
+
+//Add connection to the PostgreSQL DB
+builder.Services.AddDbContext<LinkShortenerDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
