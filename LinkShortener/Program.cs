@@ -31,6 +31,8 @@ builder.Services.AddScoped<IJwtService, JwtService>();
 
 builder.Services.AddScoped<IUrlRepository, UrlRepository>();
 
+builder.Services.AddScoped<IUrlShorteningService, UrlShorteningService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
