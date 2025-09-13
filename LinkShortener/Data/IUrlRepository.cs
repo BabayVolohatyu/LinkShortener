@@ -10,6 +10,7 @@ namespace LinkShortener.Data
         Task<Url?> GetByShortUrlAsync(string shortUrl);
         Task<Url?> GetByCodeAsync(string code);
         Task<Url> CreateAsync(Url url);
+        Task UpdateAsync(Url url);
         Task DeleteAsync(int id);
     }
 }

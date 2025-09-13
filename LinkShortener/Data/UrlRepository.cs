@@ -43,6 +43,11 @@ namespace LinkShortener.Data
             return url;
         }
 
+        public async Task UpdateAsync(Url url)
+        {
+            await _context.SaveChangesAsync();
+        }
+
         public async Task DeleteAsync(int id)
         {
             var url = await _context.Urls.FindAsync(id);

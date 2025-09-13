@@ -75,7 +75,7 @@ namespace LinkShortener.Controllers
             var userName = User.Identity?.Name;
 
             // Generate short URL
-            if(!Uri.TryCreate(dto.OriginalUrl, UriKind.Absolute, out _))
+            if (!Uri.TryCreate(dto.OriginalUrl, UriKind.Absolute, out _))
             {
                 return BadRequest("The URL is invalid");
             }
@@ -90,7 +90,7 @@ namespace LinkShortener.Controllers
                 Code = code,
                 ShortUrl = shortenedUrl,
                 Description = dto.Description,
-                CreatedBy = userName?? "Unknown",
+                CreatedBy = userName ?? "Unknown",
                 CreatedDate = DateTimeOffset.UtcNow
             };
 
@@ -123,6 +123,36 @@ namespace LinkShortener.Controllers
             {
                 await _urlRepository.DeleteAsync(id);
                 return NoContent();
+            }
+
+            return Forbid();
+        }
+
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Admin,User")]
+        public async Task<IActionResult> Update(int id, [FromBody] UrlDTO dto)
+        {
+            var url = await _urlRepository.GetByIdAsync(id);
+            if (url == null) return NotFound();
+
+            var currentUserName = User.Identity?.Name;
+
+            if (User.IsInRole("Admin") || url.CreatedBy == currentUserName)
+            {
+                url.Description = dto.Description;
+                await _urlRepository.UpdateAsync(url);
+
+                var result = new UrlDTO
+                {
+                    Id = url.Id,
+                    ShortUrl = url.ShortUrl,
+                    OriginalUrl = url.OriginalUrl,
+                    CreatedBy = url.CreatedBy,
+                    CreatedDate = url.CreatedDate,
+                    Description = url.Description
+                };
+
+                return Ok(result);
             }
 
             return Forbid();
