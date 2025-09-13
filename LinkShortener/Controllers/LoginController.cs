@@ -64,6 +64,13 @@ namespace LinkShortener.Controllers
 
             await _repository.CreateAsync(user);
 
+            var jwt = _jwtService.Generate(user.Id, user.Role);
+
+            Response.Cookies.Append("jwt", jwt, new CookieOptions
+            {
+                HttpOnly = true
+            });
+
             var userDTO = new UserDTO
             {
                 Id = user.Id,
