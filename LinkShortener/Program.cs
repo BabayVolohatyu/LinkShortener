@@ -29,6 +29,8 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 builder.Services.AddScoped<IJwtService, JwtService>();
 
+builder.Services.AddScoped<IUrlRepository, UrlRepository>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
