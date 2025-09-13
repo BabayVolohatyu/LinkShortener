@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LinkShortener.Controllers
 {
+    [Route("index")]
     public class IndexController : Controller
     {
         private readonly IUrlRepository _urlRepository;
