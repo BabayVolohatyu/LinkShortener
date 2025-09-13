@@ -1,0 +1,60 @@
+<h2>All Shortened URLs</h2>
+
+<!-- Error message -->
+<div *ngIf="errorMessage" class="error">
+  {{ errorMessage }}
+</div>
+
+<!-- Add new URL (only for authenticated users) -->
+<section *ngIf="auth.isLoggedIn()" class="add-url">
+  <form [formGroup]="form" (ngSubmit)="addUrl()">
+    <input 
+      formControlName="originalUrl" 
+      placeholder="Enter original URL" 
+      aria-label="Original URL"
+    />
+    <button type="submit" [disabled]="form.invalid">Add</button>
+  </form>
+</section>
+
+<!-- URL table -->
+<table class="url-table">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Original URL</th>
+      <th>Short URL</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let url of urls">
+      <td>{{ url.id }}</td>
+      <td>
+        <a [href]="url.originalUrl" target="_blank" rel="noopener noreferrer">
+          {{ url.originalUrl }}
+        </a>
+      </td>
+      <td>
+        <a [href]="url.shortUrl" target="_blank" rel="noopener noreferrer">
+          {{ url.shortUrl }}
+        </a>
+      </td>
+      <td>
+        <button (click)="viewDetails(url.id)">Details</button>
+        <button 
+          *ngIf="auth.isLoggedIn()" 
+          (click)="deleteUrl(url.id)" 
+          class="danger"
+        >
+          Delete
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- No data message -->
+<div *ngIf="urls.length === 0 && !errorMessage" class="empty">
+  No URLs found.
+</div>
