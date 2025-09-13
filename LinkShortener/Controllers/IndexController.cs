@@ -1,0 +1,131 @@
+﻿using LinkShortener.Data;
+using LinkShortener.DTO;
+using LinkShortener.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace LinkShortener.Controllers
+{
+    public class IndexController : Controller
+    {
+        private readonly IUrlRepository _urlRepository;
+        private readonly IUserRepository _userRepository;
+
+        public IndexController(IUrlRepository urlRepository, IUserRepository userRepository)
+        {
+            _urlRepository = urlRepository;
+            _userRepository = userRepository;
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetAll()
+        {
+            var urls = await _urlRepository.GetAllAsync();
+            var dto = urls.Select(u => new UrlDTO
+            {
+                Id = u.Id,
+                ShortUrl = u.ShortUrl,
+                OriginalUrl = u.OriginalUrl,
+                CreatedBy = u.CreatedBy,
+                CreatedDate = u.CreatedDate,
+                Description = u.Description
+            });
+            return Ok(dto);
+        }
+
+        [HttpGet("{id}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var url = await _urlRepository.GetByIdAsync(id);
+            if (url == null) return NotFound();
+
+            var dto = new UrlDTO
+            {
+                Id = url.Id,
+                ShortUrl = url.ShortUrl,
+                OriginalUrl = url.OriginalUrl,
+                CreatedBy = url.CreatedBy,
+                CreatedDate = url.CreatedDate,
+                Description = url.Description
+            };
+            return Ok(dto);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin,User")]
+        public async Task<IActionResult> Create([FromBody] UrlDTO dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            // Check if URL already exists
+            var existing = await _urlRepository.GetByOriginalUrlAsync(dto.OriginalUrl);
+            if (existing != null)
+                return Conflict(new { message = "This URL already exists." });
+
+            // Get current user ID from token
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "id");
+            if (userIdClaim == null) return Unauthorized();
+            var currentUserId = int.Parse(userIdClaim.Value);
+
+            // Generate short URL(pseudo for now)
+            var shortUrl = Guid.NewGuid().ToString().Substring(0, 8);
+            while (await _urlRepository.GetByShortUrlAsync(shortUrl) != null) 
+            {
+                shortUrl = Guid.NewGuid().ToString("N").Substring(0,8);
+            }
+
+            var user = await _userRepository.GetByIdAsync(currentUserId);
+            if (user == null) return Unauthorized();
+
+            var url = new Url
+            {
+                OriginalUrl = dto.OriginalUrl,
+                ShortUrl = shortUrl,
+                Description = dto.Description,
+                CreatedBy = user.Name?? "Unknown",
+                CreatedDate = DateTimeOffset.UtcNow
+            };
+
+            await _urlRepository.CreateAsync(url);
+
+            var result = new UrlDTO
+            {
+                Id = url.Id,
+                ShortUrl = url.ShortUrl,
+                OriginalUrl = url.OriginalUrl,
+                CreatedBy = url.CreatedBy,
+                CreatedDate = url.CreatedDate,
+                Description = url.Description
+            };
+
+            return Ok(result);
+        }
+
+
+        [HttpPost("{id}")]
+        [Authorize(Roles = "Admin,User")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var url = await _urlRepository.GetByIdAsync(id);
+            if (url == null) return NotFound();
+
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "id");
+            if (userIdClaim == null) return Unauthorized();
+
+            var currentUserId = int.Parse(userIdClaim.Value);
+
+            if (User.IsInRole("Admin") || url.CreatedBy == currentUserId.ToString())
+            {
+                await _urlRepository.DeleteAsync(id);
+                return NoContent();
+            }
+
+            return Forbid();
+        }
+
+
+    }
+}
