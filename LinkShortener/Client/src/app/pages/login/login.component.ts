@@ -4,6 +4,8 @@ import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angula
 import { HttpClient } from '@angular/common/http';
 import { Router, RouterModule } from '@angular/router';
 import { trigger, style, animate, transition } from '@angular/animations';
+import { AuthService } from '../../services/auth.service'; 
+import { environment } from '../../environment.development';
 
 @Component({
   selector: 'app-login',
@@ -22,15 +24,15 @@ import { trigger, style, animate, transition } from '@angular/animations';
 })
 export class LoginComponent {
   form: FormGroup;
-
   errorMessage = '';
   userNotFound = false;
-  isRegisterMode = false;   
+  isRegisterMode = false;
 
   constructor(
     private fb: FormBuilder,
     private http: HttpClient,
-    private router: Router
+    private router: Router,
+    private authService: AuthService   
   ) {
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -41,10 +43,10 @@ export class LoginComponent {
   onSubmit() {
     if (this.isRegisterMode) {
       // Registration
-      this.http.post<any>('http://localhost:5091/register', this.form.value)
+      this.http.post<any>(`${environment.apiUrl}/register`, this.form.value, { withCredentials: true })
         .subscribe({
           next: res => {
-            localStorage.setItem('jwt', res.token);
+            // No need to store token manually
             this.router.navigate(['/index']);
           },
           error: err => {
@@ -53,12 +55,12 @@ export class LoginComponent {
         });
     } else {
       // Login
-      this.http.post<any>('http://localhost:5091/login', {
+      this.http.post<any>(`${environment.apiUrl}/login`, {
         email: this.form.value.email,
         password: this.form.value.password
-      }).subscribe({
+      }, { withCredentials: true }).subscribe({
         next: res => {
-          localStorage.setItem('jwt', res.token);
+          // Token is stored in HTTP-only cookie
           this.router.navigate(['/index']);
         },
         error: err => {
@@ -76,14 +78,14 @@ export class LoginComponent {
     this.userNotFound = false;
     this.isRegisterMode = true;
 
-    //add field on registration
+    // add name field on registration
     if (!this.form.contains('name')) {
       this.form.addControl('name', this.fb.control('', Validators.required));
     }
   }
 
   continueAnonymously() {
-    localStorage.setItem('jwt', 'ANONYMOUS');
+    // Send a request to clear cookie if needed or just navigate
     this.router.navigate(['/index']);
   }
 }
