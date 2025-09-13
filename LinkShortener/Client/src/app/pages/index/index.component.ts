@@ -30,6 +30,7 @@ export class IndexComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadUrls();
+    this.auth.loadUser().subscribe();
   }
 
   loadUrls(): void {
@@ -76,4 +77,11 @@ export class IndexComponent implements OnInit {
   viewDetails(id: number): void {
     this.router.navigate(['/details', id]);
   }
+
+  onLogout(): void {
+  this.auth.logout().subscribe(() => {
+    this.router.navigate(['/login']); // optional redirect
+  });
+}
+
 }

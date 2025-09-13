@@ -19,10 +19,12 @@
     {{ isRegisterMode ? 'Register' : 'Login' }}
   </button>
 
-  <div *ngIf="userNotFound" class="options">
-    <span (click)="registerMode()">Register</span> |
-    <span (click)="continueAnonymously()">Continue anonymously</span>
-  </div>
+  <div class="options">
+  <span *ngIf="userNotFound" (click)="registerMode()">Register</span>
+  <span *ngIf="userNotFound"> | </span>
+  <span (click)="continueAnonymously()">Continue anonymously</span>
+</div>
+
 
   <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
 </form>

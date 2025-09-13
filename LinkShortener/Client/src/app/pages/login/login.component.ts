@@ -64,7 +64,7 @@ export class LoginComponent {
           this.router.navigate(['/index']);
         },
         error: err => {
-          if (err.status === 404) {
+          if (err.status === 401) {
             this.userNotFound = true;
           } else {
             this.errorMessage = err.error?.message || err.message || 'Login failed';

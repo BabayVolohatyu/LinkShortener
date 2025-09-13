@@ -1,70 +1,55 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { JwtHelperService } from '@auth0/angular-jwt';
+import { Observable, of } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
+import { environment } from '../environment.development';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private tokenKey = 'auth_token';
-  private jwtHelper = new JwtHelperService();
+  private currentUser: any = null;
 
-  constructor(private router: Router) {}
+  constructor(private http: HttpClient, private router: Router) {}
 
-  // Save token after login
-  setToken(token: string): void {
-    localStorage.setItem(this.tokenKey, token);
+  loadUser(): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/me`, { withCredentials: true }).pipe(
+      tap(user => this.currentUser = user),
+      catchError(() => {
+        this.currentUser = null;
+        return of(null);
+      })
+    );
   }
 
-  getToken(): string | null {
-    return localStorage.getItem(this.tokenKey);
+  logout(): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/logout`, {}, { withCredentials: true })
+      .pipe(
+        tap(() => {
+          this.currentUser = null; // clear frontend state
+        })
+      );
   }
 
-  clearToken(): void {
-    localStorage.removeItem(this.tokenKey);
-    this.router.navigate(['/login']);
-  }
 
   isLoggedIn(): boolean {
-    const token = this.getToken();
-    return token != null && !this.jwtHelper.isTokenExpired(token);
+    return this.currentUser != null;
   }
 
-  getDecodedToken(): any {
-    const token = this.getToken();
-    if (!token) return null;
-    return this.jwtHelper.decodeToken(token);
-  }
-
-  getUserId(): number | null {
-    const decoded = this.getDecodedToken();
-    return decoded?.id ? Number(decoded.id) : null;
+  getUser(): any {
+    return this.currentUser;
   }
 
   getUserName(): string {
-    return this.getClaim('unique_name') || this.getClaim('name') || 'Unknown';
-  }
-
-  hasRole(role: string): boolean {
-    const decoded = this.getDecodedToken();
-    if (!decoded || !decoded.role) return false;
-
-    if (Array.isArray(decoded.role)) {
-      return decoded.role.includes(role);
-    }
-    return decoded.role === role;
-  }
-
-  getClaim(key: string): string | null {
-    const decoded = this.getDecodedToken();
-    return decoded?.[key] || null;
+    return this.currentUser?.name || 'Unknown';
   }
 
   isAdmin(): boolean {
-    return this.hasRole('Admin');
+    return this.currentUser?.role === 'Admin';
   }
 
   isUser(): boolean {
-    return this.hasRole('User');
+    return this.currentUser?.role === 'User';
   }
 }

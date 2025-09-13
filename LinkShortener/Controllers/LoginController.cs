@@ -2,7 +2,12 @@
 using LinkShortener.DTO;
 using LinkShortener.Models;
 using LinkShortener.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Query;
+using System.Reflection.Metadata.Ecma335;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace LinkShortener.Controllers
 {
@@ -90,6 +95,45 @@ namespace LinkShortener.Controllers
                 user = userDTO
             });
 
+        }
+
+        [HttpGet("me")]
+        [Authorize] 
+        public IActionResult Me()
+        {
+            // Ensure we have an authenticated user
+            if (User?.Identity == null || !User.Identity.IsAuthenticated)
+                return Unauthorized(new { message = "User is not authenticated." });
+
+            // Extract claims
+            var idClaim = User.FindFirst("id");
+            var roleClaim = User.FindFirst(ClaimTypes.Role);
+            var nameClaim = User.FindFirst(ClaimTypes.Name);
+
+            if (idClaim == null || roleClaim == null || nameClaim == null)
+                return Unauthorized(new { message = "Invalid or incomplete token." });
+
+            var userDto = new UserDTO
+            {
+                Id = int.Parse(idClaim.Value),
+                Name = nameClaim.Value,
+                Email = User.FindFirst("email")?.Value ?? string.Empty, // optional, may be empty
+                Role = roleClaim.Value
+            };
+
+            return Ok(userDto);
+        }
+        [HttpPost("logout")]
+        [Authorize]
+        public IActionResult Logout()
+        {
+            Response.Cookies.Append("jwt", "", new CookieOptions
+            {
+                HttpOnly = true,
+                Expires = DateTimeOffset.UtcNow.AddDays(-1),
+            });
+
+            return Ok(new { message = "Logged out successfully" });
         }
     }
 }
