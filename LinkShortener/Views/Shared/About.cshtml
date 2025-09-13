@@ -1,0 +1,132 @@
+﻿@{
+    ViewBag.Title = "About";
+    var isAdmin = User.IsInRole("Admin");
+}
+
+<div class="about-page">
+    <h2>About</h2>
+
+    @if (isAdmin)
+    {
+        <form method="post" class="container">
+            <label for="updatedText">Edit About Text</label>
+            <textarea id="updatedText" name="updatedText" rows="12">@ViewBag.AboutText</textarea>
+
+            <button type="submit">Save</button>
+
+            @if (ViewBag.Message != null)
+            {
+                <p class="success">@ViewBag.Message</p>
+            }
+        </form>
+    }
+    else
+    {
+        <div class="container">
+            <p>@ViewBag.AboutText</p>
+        </div>
+    }
+</div>
+
+<style>
+    .about-page {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+        background-color: #121212;
+        font-family: 'Segoe UI', sans-serif;
+        padding: 40px;
+        color: #fff;
+    }
+
+    h2 {
+        color: #0ff;
+        margin-bottom: 25px;
+        text-shadow: 0 0 8px rgba(0, 255, 255, 0.6);
+    }
+
+    .error {
+        color: #f66;
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+
+    .success {
+        color: #0f0;
+        margin-top: 10px;
+        font-size: 0.9rem;
+    }
+
+    .container {
+        background: #1e1e1e;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 0 15px rgba(0, 255, 255, 0.15);
+        max-width: 700px;
+        width: 100%;
+    }
+
+    p {
+        margin: 8px 0;
+        color: #ccc;
+        white-space: pre-wrap;
+    }
+
+        p strong {
+            color: #0ff;
+        }
+
+    form {
+        margin-top: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    label {
+        font-weight: bold;
+        color: #0ff;
+    }
+
+    textarea {
+        resize: vertical;
+        min-height: 200px;
+        padding: 10px;
+        border-radius: 6px;
+        border: 1px solid #333;
+        background: #1e1e1e;
+        color: #fff;
+        font-family: inherit;
+        transition: 0.2s;
+        font-size: 1.1rem;
+    }
+
+        textarea:focus {
+            border-color: #0ff;
+            box-shadow: 0 0 8px #0ff;
+            outline: none;
+        }
+
+    button {
+        padding: 10px 16px;
+        border: 1px solid #0ff;
+        border-radius: 6px;
+        background-color: #1e1e1e;
+        color: #0ff;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+        align-self: flex-start;
+    }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        button:hover:not(:disabled) {
+            box-shadow: 0 0 12px #0ff;
+        }
+</style>

@@ -42,4 +42,7 @@ export class UrlService {
       { withCredentials: true }
     );
   }
+  goToAbout(): void {
+    window.location.href = `${environment.apiUrl}/about`;
+  }
 }

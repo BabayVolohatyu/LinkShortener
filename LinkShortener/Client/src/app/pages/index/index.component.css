@@ -110,3 +110,9 @@ a {
 a:hover {
   text-decoration: underline;
 }
+
+.button-row {
+  display: flex;
+  gap: 10px; 
+}
+

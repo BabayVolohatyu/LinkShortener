@@ -17,7 +17,12 @@
   </form>
 </section>
 
-<button *ngIf="auth.isLoggedIn()" (click)="onLogout()">Logout</button>
+<div class="button-row" *ngIf="auth.isLoggedIn()">
+  <button (click)="onLogout()">Logout</button>
+  <button (click)="goToAbout()">About</button>
+</div>
+
+
 
 <!-- URL table -->
 <table class="url-table">

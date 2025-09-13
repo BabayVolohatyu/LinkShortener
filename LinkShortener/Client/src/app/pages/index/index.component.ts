@@ -78,6 +78,10 @@ export class IndexComponent implements OnInit {
     this.router.navigate(['/details', id]);
   }
 
+  goToAbout() {
+    this.urlService.goToAbout();
+  }
+
   onLogout(): void {
   this.auth.logout().subscribe(() => {
     this.router.navigate(['/login']); // optional redirect
