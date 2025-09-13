@@ -26,6 +26,11 @@ namespace LinkShortener.Configurations
             builder
                 .Property(u => u.Code)
                 .HasMaxLength(UrlShorteningService._numberOfChars);
+
+            builder
+                .HasOne(u => u.User)
+                .WithMany(user => user.Urls)
+                .HasForeignKey(u => u.CreatedById);
         }
     }
 }

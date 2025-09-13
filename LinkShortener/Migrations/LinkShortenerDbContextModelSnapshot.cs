@@ -39,6 +39,9 @@ namespace LinkShortener.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("CreatedById")
+                        .HasColumnType("integer");
+
                     b.Property<DateTimeOffset>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
 
@@ -58,6 +61,8 @@ namespace LinkShortener.Migrations
 
                     b.HasIndex("Code")
                         .IsUnique();
+
+                    b.HasIndex("CreatedById");
 
                     b.HasIndex("OriginalUrl")
                         .IsUnique();
@@ -98,6 +103,22 @@ namespace LinkShortener.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("LinkShortener.Models.Url", b =>
+                {
+                    b.HasOne("LinkShortener.Models.User", "User")
+                        .WithMany("Urls")
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("LinkShortener.Models.User", b =>
+                {
+                    b.Navigation("Urls");
                 });
 #pragma warning restore 612, 618
         }

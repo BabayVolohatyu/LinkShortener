@@ -72,7 +72,7 @@ namespace LinkShortener.Controllers
             if (userIdClaim == null) return Unauthorized();
             var currentUserId = int.Parse(userIdClaim.Value);
 
-            var userName = User.Identity?.Name;
+            var userName = User.Identity?.Name ?? "Unknown";
 
             // Generate short URL
             if (!Uri.TryCreate(dto.OriginalUrl, UriKind.Absolute, out _))
@@ -90,7 +90,8 @@ namespace LinkShortener.Controllers
                 Code = code,
                 ShortUrl = shortenedUrl,
                 Description = dto.Description,
-                CreatedBy = userName ?? "Unknown",
+                CreatedById = currentUserId,
+                CreatedBy = userName,
                 CreatedDate = DateTimeOffset.UtcNow
             };
 
@@ -102,6 +103,7 @@ namespace LinkShortener.Controllers
                 ShortUrl = url.ShortUrl,
                 OriginalUrl = url.OriginalUrl,
                 CreatedBy = url.CreatedBy,
+                CreatedById = url.CreatedById,
                 CreatedDate = url.CreatedDate,
                 Description = url.Description
             };
@@ -117,9 +119,11 @@ namespace LinkShortener.Controllers
             var url = await _urlRepository.GetByIdAsync(id);
             if (url == null) return NotFound();
 
-            var currentUserName = User.Identity?.Name;
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "id");
+            if (userIdClaim == null) return Unauthorized();
+            var currentUserId = int.Parse(userIdClaim.Value);
 
-            if (User.IsInRole("Admin") || url.CreatedBy == currentUserName)
+            if ((User.IsInRole("Admin") || url.CreatedById == currentUserId))
             {
                 await _urlRepository.DeleteAsync(id);
                 return NoContent();
@@ -135,9 +139,11 @@ namespace LinkShortener.Controllers
             var url = await _urlRepository.GetByIdAsync(id);
             if (url == null) return NotFound();
 
-            var currentUserName = User.Identity?.Name;
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "id");
+            if (userIdClaim == null) return Unauthorized();
+            var currentUserId = int.Parse(userIdClaim.Value);
 
-            if (User.IsInRole("Admin") || url.CreatedBy == currentUserName)
+            if (User.IsInRole("Admin") || url.CreatedById == currentUserId)
             {
                 url.Description = dto.Description;
                 await _urlRepository.UpdateAsync(url);
