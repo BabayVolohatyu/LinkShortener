@@ -22,6 +22,10 @@ namespace LinkShortener.Data
             return await _context.Urls.FindAsync(id);
         }
 
+        public async Task<Url?> GetByOriginalUrlAsync(string originalUrl)
+        {
+            return await _context.Urls.FirstOrDefaultAsync(u => u.OriginalUrl == originalUrl);
+        }
         public async Task<Url> CreateAsync(Url url)
         {
             await _context.AddAsync(url);
