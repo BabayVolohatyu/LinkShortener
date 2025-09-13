@@ -74,3 +74,9 @@ By default, the Angular app will run on: **http://localhost:4200**
   dotnet ef migrations add MigrationName
   dotnet ef database update
   ```
+- There are two users on a startup
+   ```bash
+   admin@test.com
+   user@test.com
+   ```
+   both have password `0000`
