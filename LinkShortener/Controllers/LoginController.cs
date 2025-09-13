@@ -42,7 +42,12 @@ namespace LinkShortener.Controllers
                 Role = user.Role
             };
 
-            return Ok(userDTO);
+            return Ok(new
+            {
+                token = jwt,
+                user = userDTO
+            });
+
         }
 
         [HttpPost("register")]
@@ -79,7 +84,12 @@ namespace LinkShortener.Controllers
                 Role = user.Role
             };
 
-            return Ok(userDTO);
+            return Ok(new
+            {
+                token = jwt,
+                user = userDTO
+            });
+
         }
     }
 }
