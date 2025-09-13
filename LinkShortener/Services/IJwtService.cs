@@ -2,6 +2,6 @@
 {
     public interface IJwtService
     {
-        string Generate(int? id = null, string? role = null);
+        string Generate(int? id = null, string? role = null, string? name = null);
     }
 }
