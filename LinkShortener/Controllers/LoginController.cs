@@ -4,10 +4,8 @@ using LinkShortener.Models;
 using LinkShortener.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Query;
-using System.Reflection.Metadata.Ecma335;
 using System.Security.Claims;
-using System.Threading.Tasks;
+
 
 namespace LinkShortener.Controllers
 {
