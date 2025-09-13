@@ -9,6 +9,7 @@ namespace LinkShortener.Data
 
         public DbSet<User> Users { get; set; }
 
+        public DbSet<Url> Urls { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder) 
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(LinkShortenerDbContext).Assembly);
