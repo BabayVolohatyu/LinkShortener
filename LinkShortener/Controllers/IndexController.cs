@@ -1,6 +1,7 @@
 ﻿using LinkShortener.Data;
 using LinkShortener.DTO;
 using LinkShortener.Models;
+using LinkShortener.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -55,7 +56,10 @@ namespace LinkShortener.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin,User")]
-        public async Task<IActionResult> Create([FromBody] UrlDTO dto)
+        public async Task<IActionResult> Create(
+            [FromBody] UrlDTO dto,
+            IUrlShorteningService urlShorteningService,
+            HttpContext httpContext)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -70,12 +74,15 @@ namespace LinkShortener.Controllers
             if (userIdClaim == null) return Unauthorized();
             var currentUserId = int.Parse(userIdClaim.Value);
 
-            // Generate short URL(pseudo for now)
-            var shortUrl = Guid.NewGuid().ToString().Substring(0, 8);
-            while (await _urlRepository.GetByShortUrlAsync(shortUrl) != null) 
+            // Generate short URL
+            if(!Uri.TryCreate(dto.OriginalUrl, UriKind.Absolute, out _))
             {
-                shortUrl = Guid.NewGuid().ToString("N").Substring(0,8);
+                return BadRequest("The URL is invalid");
             }
+
+            var code = await urlShorteningService.GenerateUniqueCode();
+
+            var shortenedUrl = $"{httpContext.Request.Scheme}:://{httpContext.Request.Host}/{code}";
 
             var user = await _userRepository.GetByIdAsync(currentUserId);
             if (user == null) return Unauthorized();
@@ -83,7 +90,8 @@ namespace LinkShortener.Controllers
             var url = new Url
             {
                 OriginalUrl = dto.OriginalUrl,
-                ShortUrl = shortUrl,
+                Code = code,
+                ShortUrl = shortenedUrl,
                 Description = dto.Description,
                 CreatedBy = user.Name?? "Unknown",
                 CreatedDate = DateTimeOffset.UtcNow
