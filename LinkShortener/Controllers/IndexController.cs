@@ -11,10 +11,12 @@ namespace LinkShortener.Controllers
     public class IndexController : Controller
     {
         private readonly IUrlRepository _urlRepository;
+        private readonly IUrlShorteningService _urlShorteningService;
 
-        public IndexController(IUrlRepository urlRepository)
+        public IndexController(IUrlRepository urlRepository, IUrlShorteningService urlShorteningService)
         {
             _urlRepository = urlRepository;
+            _urlShorteningService = urlShorteningService;
         }
 
         [HttpGet]
@@ -55,10 +57,7 @@ namespace LinkShortener.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin,User")]
-        public async Task<IActionResult> Create(
-            [FromBody] UrlDTO dto,
-            IUrlShorteningService urlShorteningService,
-            HttpContext httpContext)
+        public async Task<IActionResult> Create([FromBody] UrlDTO dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -81,9 +80,9 @@ namespace LinkShortener.Controllers
                 return BadRequest("The URL is invalid");
             }
 
-            var code = await urlShorteningService.GenerateUniqueCode();
+            var code = await _urlShorteningService.GenerateUniqueCode();
 
-            var shortenedUrl = $"{httpContext.Request.Scheme}:://{httpContext.Request.Host}/{code}";
+            var shortenedUrl = $"{Request.Scheme}:://{Request.Host}/{code}";
 
             var url = new Url
             {
