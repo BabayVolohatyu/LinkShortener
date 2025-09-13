@@ -82,7 +82,7 @@ namespace LinkShortener.Controllers
 
             var code = await _urlShorteningService.GenerateUniqueCode();
 
-            var shortenedUrl = $"{Request.Scheme}:://{Request.Host}/{code}";
+            var shortenedUrl = $"{Request.Scheme}://{Request.Host}/{code}";
 
             var url = new Url
             {
