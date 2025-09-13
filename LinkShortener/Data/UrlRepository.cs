@@ -26,6 +26,12 @@ namespace LinkShortener.Data
         {
             return await _context.Urls.FirstOrDefaultAsync(u => u.OriginalUrl == originalUrl);
         }
+
+        public async Task<Url?> GetByShortUrlAsync(string shortUrl)
+        {
+            return await _context.Urls.FirstOrDefaultAsync(u => u.ShortUrl == shortUrl);
+        }
+
         public async Task<Url> CreateAsync(Url url)
         {
             await _context.AddAsync(url);
@@ -42,6 +48,5 @@ namespace LinkShortener.Data
                 await _context.SaveChangesAsync();
             }
         }
-
     }
 }
