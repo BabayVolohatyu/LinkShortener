@@ -28,13 +28,16 @@ Make sure you have these installed:
    ```bash
    dotnet restore
    ```
-
-3. Apply database migrations (make sure PostgreSQL is running and your `appsettings.json` connection string is correct):  
+3. Install dotnet ef
+   ```bash
+   dotnet tool install --global dotnet-ef
+   ```
+4. Apply database migrations (make sure PostgreSQL is running and your `appsettings.json` connection string is correct):  
    ```bash
    dotnet ef database update
    ```
 
-4. Run the backend server:  
+5. Run the backend server:  
    ```bash
    dotnet run
    ```
@@ -61,30 +64,6 @@ By default, the API will run on: **http://localhost:5091**
    ```
 
 By default, the Angular app will run on: **http://localhost:4200**
-
----
-
-## 🚀 Launch Both (Quickstart Script)
-
-For convenience, you can launch both servers in parallel.  
-
-### Linux / macOS
-```bash
-#!/bin/bash
-cd LinkShortener && dotnet ef database update && dotnet run &
-cd Client && npm install && npm start
-```
-
-### Windows (PowerShell)
-```powershell
-cd LinkShortener
-dotnet ef database update
-Start-Process "dotnet" "run"
-cd Client
-npm install
-npm start
-```
-
 ---
 
 ## 🔑 Notes
