@@ -9,7 +9,7 @@ export class AuthService {
   private tokenKey = 'auth_token';
   private jwtHelper = new JwtHelperService();
 
-  constructor(private router: Router) { }
+  constructor(private router: Router) {}
 
   // Save token after login
   setToken(token: string): void {
@@ -42,10 +42,8 @@ export class AuthService {
   }
 
   getUserName(): string {
-  return this.getClaim('unique_name') || this.getClaim('name') || "Unknown";
+    return this.getClaim('unique_name') || this.getClaim('name') || 'Unknown';
   }
-
-
 
   hasRole(role: string): boolean {
     const decoded = this.getDecodedToken();
@@ -58,8 +56,15 @@ export class AuthService {
   }
 
   getClaim(key: string): string | null {
-  const decoded = this.getDecodedToken();
-  return decoded?.[key] || null;
+    const decoded = this.getDecodedToken();
+    return decoded?.[key] || null;
   }
 
+  isAdmin(): boolean {
+    return this.hasRole('Admin');
+  }
+
+  isUser(): boolean {
+    return this.hasRole('User');
+  }
 }

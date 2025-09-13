@@ -1,0 +1,30 @@
+<div class="container">
+  <h2>URL Details</h2>
+
+  <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+
+  <div *ngIf="url">
+    <p><strong>ID:</strong> {{ url.id }}</p>
+    <p><strong>Short URL:</strong> <a [href]="url.shortUrl" target="_blank">{{ url.shortUrl }}</a></p>
+    <p><strong>Original URL:</strong> <a [href]="url.originalUrl" target="_blank">{{ url.originalUrl }}</a></p>
+    <p><strong>Created By:</strong> {{ url.createdBy }}</p>
+    <p><strong>Created Date:</strong> {{ url.createdDate | date:'medium' }}</p>
+
+    <div *ngIf="canEdit; else viewOnly">
+      <form [formGroup]="form" (ngSubmit)="save()">
+        <label>Description:</label>
+        <textarea formControlName="description" rows="3" cols="40"></textarea>
+        <div *ngIf="form.controls['description'].invalid && form.controls['description'].touched" class="error">
+          Description is too long (max 500 chars).
+        </div>
+        <button type="submit" [disabled]="form.invalid">Save</button>
+      </form>
+    </div>
+
+    <ng-template #viewOnly>
+      <p><strong>Description:</strong> {{ url.description || 'No description' }}</p>
+    </ng-template>
+
+    <button (click)="back()">Back</button>
+  </div>
+</div>
