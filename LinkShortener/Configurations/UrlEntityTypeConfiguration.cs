@@ -20,6 +20,9 @@ namespace LinkShortener.Configurations
                 .HasIndex(u => u.ShortUrl)
                 .IsUnique();
 
+            builder 
+                .HasIndex(u => u.Code)
+                .IsUnique();
             builder
                 .Property(u => u.Code)
                 .HasMaxLength(UrlShorteningService._numberOfChars);
