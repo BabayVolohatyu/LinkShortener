@@ -1,4 +1,5 @@
 ﻿using LinkShortener.Models;
+using LinkShortener.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -18,6 +19,10 @@ namespace LinkShortener.Configurations
             builder
                 .HasIndex(u => u.ShortUrl)
                 .IsUnique();
+
+            builder
+                .Property(u => u.Code)
+                .HasMaxLength(UrlShorteningService._numberOfChars);
         }
     }
 }
