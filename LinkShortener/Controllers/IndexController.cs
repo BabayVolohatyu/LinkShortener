@@ -10,12 +10,10 @@ namespace LinkShortener.Controllers
     public class IndexController : Controller
     {
         private readonly IUrlRepository _urlRepository;
-        private readonly IUserRepository _userRepository;
 
-        public IndexController(IUrlRepository urlRepository, IUserRepository userRepository)
+        public IndexController(IUrlRepository urlRepository)
         {
             _urlRepository = urlRepository;
-            _userRepository = userRepository;
         }
 
         [HttpGet]
@@ -74,6 +72,8 @@ namespace LinkShortener.Controllers
             if (userIdClaim == null) return Unauthorized();
             var currentUserId = int.Parse(userIdClaim.Value);
 
+            var userName = User.Identity?.Name;
+
             // Generate short URL
             if(!Uri.TryCreate(dto.OriginalUrl, UriKind.Absolute, out _))
             {
@@ -84,16 +84,13 @@ namespace LinkShortener.Controllers
 
             var shortenedUrl = $"{httpContext.Request.Scheme}:://{httpContext.Request.Host}/{code}";
 
-            var user = await _userRepository.GetByIdAsync(currentUserId);
-            if (user == null) return Unauthorized();
-
             var url = new Url
             {
                 OriginalUrl = dto.OriginalUrl,
                 Code = code,
                 ShortUrl = shortenedUrl,
                 Description = dto.Description,
-                CreatedBy = user.Name?? "Unknown",
+                CreatedBy = userName?? "Unknown",
                 CreatedDate = DateTimeOffset.UtcNow
             };
 
@@ -120,12 +117,9 @@ namespace LinkShortener.Controllers
             var url = await _urlRepository.GetByIdAsync(id);
             if (url == null) return NotFound();
 
-            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "id");
-            if (userIdClaim == null) return Unauthorized();
+            var currentUserName = User.Identity?.Name;
 
-            var currentUserId = int.Parse(userIdClaim.Value);
-
-            if (User.IsInRole("Admin") || url.CreatedBy == currentUserId.ToString())
+            if (User.IsInRole("Admin") || url.CreatedBy == currentUserName)
             {
                 await _urlRepository.DeleteAsync(id);
                 return NoContent();

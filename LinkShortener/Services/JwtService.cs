@@ -2,6 +2,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Xml.Linq;
 
 namespace LinkShortener.Services
 {
@@ -13,7 +14,7 @@ namespace LinkShortener.Services
             secureKey = configuration["JwtSettings:SecretKey"]
                     ?? throw new ArgumentNullException("Jwt key doesn't exist");
         }
-        public string Generate(int? id = null, string? role = null)
+        public string Generate(int? id = null, string? role = null, string? name = null)
         {
             var claims = new List<Claim>();
 
@@ -22,6 +23,9 @@ namespace LinkShortener.Services
 
             if (!string.IsNullOrEmpty(role))
                 claims.Add(new Claim(ClaimTypes.Role, role));
+
+            if (!string.IsNullOrEmpty(name))
+                claims.Add(new Claim(ClaimTypes.Name, name));
 
             var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secureKey));
             var credentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256Signature);

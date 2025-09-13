@@ -27,7 +27,7 @@ namespace LinkShortener.Controllers
                 return Unauthorized(new { message = "Invalid email or password" });
             }
 
-            var jwt = _jwtService.Generate(user.Id, user.Role);
+            var jwt = _jwtService.Generate(user.Id, user.Role, user.Name);
 
             Response.Cookies.Append("jwt", jwt, new CookieOptions 
             {
@@ -64,7 +64,7 @@ namespace LinkShortener.Controllers
 
             await _repository.CreateAsync(user);
 
-            var jwt = _jwtService.Generate(user.Id, user.Role);
+            var jwt = _jwtService.Generate(user.Id, user.Role, user.Name);
 
             Response.Cookies.Append("jwt", jwt, new CookieOptions
             {
